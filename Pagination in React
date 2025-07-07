@@ -1,0 +1,66 @@
+- slice() se page-wise images nikalo
+- totalPages calculate karo
+- Page change pe setCurrentPage() call karo
+- Prev, Next, 1 2 3 buttons render karo using Array.from()
+
+1.  useState se page track karna
+    const [currentPage, setCurrentPage] = useState(1);  // starting from page 1
+    const itemsPerPage = 12; // ek page pe 12 image
+
+2.  Array ka slice() use karke 12 images nikaal lo
+    const paginatedImages = galleryImages.slice(
+          (currentPage - 1) * itemsPerPage,
+          currentPage * itemsPerPage
+        );
+      eg - Agar currentPage = 1 => slice(0, 12); // 0 to 11th index → 12 images
+           Agar currentPage = 2 => slice(12, 24); // 12 to 23rd index
+
+3.  Kitne total pages banenge ? 
+          const totalPages = Math.ceil(galleryImages.length / itemsPerPage);
+         // agar 25 images hain toh 3 pages banenge (12 + 12 + 1)
+
+4. Page change hone pe setCurrentPage 
+         const handlePageChange = (page) => {
+            if (page >= 1 && page <= totalPages) {
+              setCurrentPage(page); // page update
+              window.scrollTo({ top: 0, behavior: 'smooth' }); // page scroll to top
+            }
+          };
+
+5.  Pagination Button ka JSX - 
+          <div className="flex justify-center gap-3 mt-10 flex-wrap">
+
+              {/* Prev Button */}
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1} >
+                Prev
+              </button>
+            
+              {/* Page Number Buttons */}
+              {Array.from({ length: totalPages }, (_, i) => (                           // Array bnao of length {totalpages} -> hr idx p traverse kro -> on click button -> ek callback func call kro
+                <button                                                                        // _ ka mtlb hai — pehla argument (value) kaam ka nahi, to ignore kiya.
+                  key={i}
+                  onClick={() => handlePageChange(i + 1)}                                      // i + 1 isliye, kyunki index 0 se start hota hai, but pages 1 se.
+                  className={currentPage === i + 1 ? 'bg-green-700 text-white' : ''} > 
+                  {i + 1}
+                </button>
+              ))}
+            
+              {/* Next Button */}
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages} >
+                Next
+              </button>
+        
+        </div>
+        
+        
+// How to map images to imageCard component --> simple - 
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {paginatedImages.map((item, index) => (
+                  <ImageCard key={index} image={item.image} />
+                ))}
+        </div>       
